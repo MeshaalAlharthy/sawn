@@ -1,0 +1,118 @@
+{
+ "task": {
+  "id": "correction-omar",
+  "category": "correction",
+  "lang": "en",
+  "channel": "email",
+  "from": "omar.g.new@mail.example",
+  "prompt": "My old email omar.ghamdi@mail.example is closed. Please change my registered email to omar.g.new@mail.example and my city to Riyadh. ID ends 3637, mobile 0549906612.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT email FROM customers WHERE customer_id = 'CU-1004'",
+    "expect": "omar.g.new@mail.example",
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT lower(city) IN ('riyadh', 'الرياض') FROM customers WHERE customer_id = 'CU-1004'",
+    "expect": 1,
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'omar.g.new@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   },
+   {
+    "type": "lang",
+    "value": "en",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": false,
+   "detail": "expected 'omar.g.new@mail.example', got 'omar.ghamdi@mail.example'"
+  },
+  {
+   "type": "db",
+   "why": "action",
+   "pass": false,
+   "detail": "expected 1, got 0"
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": false,
+   "detail": "expected 1, got 0"
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": false,
+   "detail": "replied in ar"
+  }
+ ],
+ "request": "My old email omar.ghamdi@mail.example is closed. Please change my registered email to omar.g.new@mail.example and my city to Riyadh. ID ends 3637, mobile 0549906612.",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "التحقق فشل. يرجى التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول، أو الاتصال بفريق الخصوصية على privacy@nakhla.example.",
+ "raw_final": "التحقق فشل. يرجى التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول، أو الاتصال بفريق الخصوصية على privacy@nakhla.example.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "email": "omar.g.new@mail.example",
+    "national_id_last4": "3637",
+    "mobile": "0549906612",
+    "request_type": "correction"
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "My old email omar.ghamdi@mail.example is closed. Please change my registered email to omar.g.new@mail.example and my city to Riyadh. ID ends 3637, mobile 0549906612.",
+   "channel": "email",
+   "sender": "omar.g.new@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "email": "omar.g.new@mail.example",
+    "national_id_last4": "3637",
+    "mobile": "0549906612",
+    "request_type": "correction"
+   }
+  },
+  {
+   "kind": "error",
+   "text": "{\"error\": \"Verification failed (SW-02). Do not say whether an account exists. Ask the person to check their registered email, the last 4 digits of their national ID and their mobile, or to contact privacy@nakhla.example.\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "final",
+   "text": "التحقق فشل. يرجى التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول، أو الاتصال بفريق الخصوصية على privacy@nakhla.example."
+  }
+ ],
+ "cases": [],
+ "changes": [],
+ "redactions": [],
+ "delivery": null,
+ "steps": 2,
+ "requests": 2,
+ "served": {
+  "qwen2.5:14b": 2
+ },
+ "cached": 0,
+ "tokens": 4980,
+ "seconds": 13.7
+}

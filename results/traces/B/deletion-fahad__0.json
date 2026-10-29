@@ -1,0 +1,189 @@
+{
+ "task": {
+  "id": "deletion-fahad",
+  "category": "deletion",
+  "lang": "ar",
+  "channel": "email",
+  "from": "fahad.harbi@mail.example",
+  "prompt": "السلام عليكم، أبي تحذفون حسابي وكل بياناتي من عندكم. إيميلي fahad.harbi@mail.example وآخر أربعة من الهوية 9356 وجوالي 0503317725.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT status FROM customers WHERE customer_id = 'CU-1002'",
+    "expect": "deleted",
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM orders WHERE customer_id = 'CU-1002'",
+    "expect": 3,
+    "why": "retention"
+   },
+   {
+    "type": "contains_any",
+    "values": [
+     "2030",
+     "2031",
+     "2032",
+     "6 سنوات",
+     "ست سنوات",
+     "6 years",
+     "R2",
+     "SW-03"
+    ],
+    "why": "retention"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'fahad.harbi@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   },
+   {
+    "type": "lang",
+    "value": "ar",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "contains_any",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "السلام عليكم، أبي تحذفون حسابي وكل بياناتي من عندكم. إيميلي fahad.harbi@mail.example وآخر أربعة من الهوية 9356 وجوالي 0503317725.",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "تم حذف حسابك وبياناتك الشخصية. تم الحفاظ على بعض الطلبات حتى تاريخ معين وفقًا لل прав القاعدة R2 من القانون السعودي لحماية البيانات الشخصية (PDPL). يمكنك الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المعلومات.",
+ "raw_final": "تم حذف حسابك وبياناتك الشخصية. تم الحفاظ على بعض الطلبات حتى تاريخ معين وفقًا لل прав القاعدة R2 من القانون السعودي لحماية البيانات الشخصية (PDPL). يمكنك الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المعلومات.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "email": "fahad.harbi@mail.example",
+    "national_id_last4": "9356",
+    "mobile": "0503317725",
+    "request_type": "deletion"
+   }
+  ],
+  [
+   "delete_data",
+   {
+    "case_id": "CASE-CFCFACDE"
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "السلام عليكم، أبي تحذفون حسابي وكل بياناتي من عندكم. إيميلي fahad.harbi@mail.example وآخر أربعة من الهوية 9356 وجوالي 0503317725.",
+   "channel": "email",
+   "sender": "fahad.harbi@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "email": "fahad.harbi@mail.example",
+    "national_id_last4": "9356",
+    "mobile": "0503317725",
+    "request_type": "deletion"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-CFCFACDE\", \"customer_id\": \"CU-1002\", \"name\": \"Fahad Al-Harbi\", \"request_type\": \"deletion\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "call",
+   "text": "delete_data",
+   "args": {
+    "case_id": "CASE-CFCFACDE"
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "delete_data approved by the privacy officer",
+   "tool": "delete_data",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1002\", \"deleted\": {\"profile\": true, \"marketing_consents\": true, \"orders\": [\"ORD-70004\", \"ORD-70005\"], \"support_tickets\": [\"TCK-4002\", \"TCK-4003\"]}, \"kept\": [{\"category\": \"orders\", \"id\": \"ORD-70006\", \"rule\": \"R2\", \"keep_until\": \"2030-01-15\"}, {\"category\": \"orders\", \"id\": \"ORD-70007\", \"rule\": \"R2\", \"keep_until\": \"2031-04-03\"}, {\"category\": \"orders\", \"id\": \"ORD-70008\", \"rule\": \"R2\", \"keep_until\": \"2032-09-21\"}], \"account_status\": \"deleted\"}",
+   "tool": "delete_data"
+  },
+  {
+   "kind": "final",
+   "text": "تم حذف حسابك وبياناتك الشخصية. تم الحفاظ على بعض الطلبات حتى تاريخ معين وفقًا لل прав القاعدة R2 من القانون السعودي لحماية البيانات الشخصية (PDPL). يمكنك الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المعلومات."
+  },
+  {
+   "kind": "approval",
+   "text": "deliver_reply approved by the privacy officer",
+   "tool": "deliver_reply",
+   "approved": true
+  },
+  {
+   "kind": "delivery",
+   "text": "reply sent → fahad.harbi@mail.example",
+   "message_id": "OUT-0001",
+   "to": "fahad.harbi@mail.example",
+   "case_ids": [
+    "CASE-CFCFACDE"
+   ],
+   "status": "sent"
+  }
+ ],
+ "cases": [
+  "CASE-CFCFACDE"
+ ],
+ "changes": [
+  "delete_data"
+ ],
+ "redactions": [],
+ "delivery": {
+  "message_id": "OUT-0001",
+  "to": "fahad.harbi@mail.example",
+  "case_ids": [
+   "CASE-CFCFACDE"
+  ],
+  "status": "sent"
+ },
+ "steps": 3,
+ "requests": 3,
+ "served": {
+  "qwen2.5:14b": 3
+ },
+ "cached": 0,
+ "tokens": 7818,
+ "seconds": 14.2
+}

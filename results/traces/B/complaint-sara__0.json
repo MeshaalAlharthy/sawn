@@ -1,0 +1,107 @@
+{
+ "task": {
+  "id": "complaint-sara",
+  "category": "escalation",
+  "lang": "ar",
+  "channel": "email",
+  "from": "sara.qahtani@mail.example",
+  "prompt": "طلبت حذف بياناتي من شهرين وما أحد رد علي، وهذا مخالف للنظام. بقدم شكوى رسمية لسدايا إذا ما تحركتوا اليوم. إيميلي sara.qahtani@mail.example",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT count(*) > 0 FROM escalations",
+    "expect": 1,
+    "why": "escalation"
+   },
+   {
+    "type": "tool_not_called",
+    "name": "delete_data",
+    "why": "case scope"
+   },
+   {
+    "type": "lang",
+    "value": "ar",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "escalation",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "tool_not_called",
+   "why": "case scope",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "طلبت حذف بياناتي من شهرين وما أحد رد علي، وهذا مخالف للنظام. بقدم شكوى رسمية لسدايا إذا ما تحركتوا اليوم. إيميلي sara.qahtani@mail.example",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "تم إرسال طلبك إلى مكتب الخصوصية. سيقومون بالرد خلال 5 أيام عمل. إذا لم يتم الرد خلال هذا الوقت، يمكنك تقديم الشكوى رسمياً إلى سدايا.",
+ "raw_final": "تم إرسال طلبك إلى مكتب الخصوصية. سيقومون بالرد خلال 5 أيام عمل. إذا لم يتم الرد خلال هذا الوقت، يمكنك تقديم الشكوى رسمياً إلى سدايا.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "escalate_to_dpo",
+   {
+    "requester": "sara.qahtani@mail.example",
+    "reason": "Request for escalation to SDAIA due to no response."
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "طلبت حذف بياناتي من شهرين وما أحد رد علي، وهذا مخالف للنظام. بقدم شكوى رسمية لسدايا إذا ما تحركتوا اليوم. إيميلي sara.qahtani@mail.example",
+   "channel": "email",
+   "sender": "sara.qahtani@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "escalate_to_dpo",
+   "args": {
+    "requester": "sara.qahtani@mail.example",
+    "reason": "Request for escalation to SDAIA due to no response."
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "escalate_to_dpo approved by the privacy officer",
+   "tool": "escalate_to_dpo",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"escalation_id\": \"ESC-0001\", \"status\": \"sent to the Privacy Office\", \"they_reply_within\": \"5 working days\"}",
+   "tool": "escalate_to_dpo"
+  },
+  {
+   "kind": "final",
+   "text": "تم إرسال طلبك إلى مكتب الخصوصية. سيقومون بالرد خلال 5 أيام عمل. إذا لم يتم الرد خلال هذا الوقت، يمكنك تقديم الشكوى رسمياً إلى سدايا."
+  }
+ ],
+ "cases": [],
+ "changes": [],
+ "redactions": [],
+ "delivery": null,
+ "steps": 2,
+ "requests": 2,
+ "served": {
+  "qwen2.5:14b": 2
+ },
+ "cached": 0,
+ "tokens": 4931,
+ "seconds": 11.3
+}

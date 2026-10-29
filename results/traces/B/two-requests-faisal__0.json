@@ -1,0 +1,232 @@
+{
+ "task": {
+  "id": "two-requests-faisal",
+  "category": "multi-request",
+  "lang": "ar",
+  "channel": "email",
+  "from": "faisal.anazi@mail.example",
+  "prompt": "عندي طلبين: صححوا مدينتي إلى جدة، ووقفوا رسائل SMS فقط (الإيميل والواتساب خلوها). إيميلي faisal.anazi@mail.example، آخر 4 من الهوية 3958، الجوال 0509917846.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT lower(city) IN ('jeddah', 'jiddah', 'جدة', 'جده') FROM customers WHERE customer_id = 'CU-1010'",
+    "expect": 1,
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT granted FROM consents WHERE customer_id = 'CU-1010' AND channel = 'sms'",
+    "expect": 0,
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT sum(granted) FROM consents WHERE customer_id = 'CU-1010' AND channel IN ('email', 'whatsapp')",
+    "expect": 2,
+    "why": "case scope"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'faisal.anazi@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "case scope",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "عندي طلبين: صححوا مدينتي إلى جدة، ووقفوا رسائل SMS فقط (الإيميل والواتساب خلوها). إيميلي faisal.anazi@mail.example، آخر 4 من الهوية 3958، الجوال 0509917846.",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "تم تصحيح مدينتك إلى جدة وتم تعليق الرسائل القصيرة (SMS) فقط. بقي الاشتراك بالبريد الإلكتروني والواتساب كما هو.\n\nإذا كنت بحاجة إلى أي مساعدة أخرى، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات السعودية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01).",
+ "raw_final": "تم تصحيح مدينتك إلى جدة وتم تعليق الرسائل القصيرة (SMS) فقط. بقي الاشتراك بالبريد الإلكتروني والواتساب كما هو.\n\nإذا كنت بحاجة إلى أي مساعدة أخرى، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات السعودية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01).",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "request_type": "correction",
+    "email": "faisal.anazi@mail.example",
+    "national_id_last4": "3958",
+    "mobile": "0509917846"
+   }
+  ],
+  [
+   "verify_requester",
+   {
+    "request_type": "consent_withdrawal",
+    "email": "faisal.anazi@mail.example",
+    "national_id_last4": "3958",
+    "mobile": "0509917846"
+   }
+  ],
+  [
+   "correct_data",
+   {
+    "new_value": "Jeddah",
+    "case_id": "CASE-D3BFC820",
+    "field": "city"
+   }
+  ],
+  [
+   "withdraw_consent",
+   {
+    "case_id": "CASE-987B5154",
+    "channels": [
+     "sms"
+    ]
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "عندي طلبين: صححوا مدينتي إلى جدة، ووقفوا رسائل SMS فقط (الإيميل والواتساب خلوها). إيميلي faisal.anazi@mail.example، آخر 4 من الهوية 3958، الجوال 0509917846.",
+   "channel": "email",
+   "sender": "faisal.anazi@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "request_type": "correction",
+    "email": "faisal.anazi@mail.example",
+    "national_id_last4": "3958",
+    "mobile": "0509917846"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-D3BFC820\", \"customer_id\": \"CU-1010\", \"name\": \"Faisal Al-Anazi\", \"request_type\": \"correction\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "request_type": "consent_withdrawal",
+    "email": "faisal.anazi@mail.example",
+    "national_id_last4": "3958",
+    "mobile": "0509917846"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-987B5154\", \"customer_id\": \"CU-1010\", \"name\": \"Faisal Al-Anazi\", \"request_type\": \"consent_withdrawal\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "call",
+   "text": "correct_data",
+   "args": {
+    "new_value": "Jeddah",
+    "case_id": "CASE-D3BFC820",
+    "field": "city"
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "correct_data approved by the privacy officer",
+   "tool": "correct_data",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1010\", \"field\": \"city\", \"old_value\": \"Riyadh\", \"new_value\": \"Jeddah\"}",
+   "tool": "correct_data"
+  },
+  {
+   "kind": "call",
+   "text": "withdraw_consent",
+   "args": {
+    "case_id": "CASE-987B5154",
+    "channels": [
+     "sms"
+    ]
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "withdraw_consent approved by the privacy officer",
+   "tool": "withdraw_consent",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1010\", \"withdrawn\": [\"sms\"], \"consents_now\": {\"email\": true, \"sms\": false, \"whatsapp\": true}, \"account_status\": \"unchanged\"}",
+   "tool": "withdraw_consent"
+  },
+  {
+   "kind": "final",
+   "text": "تم تصحيح مدينتك إلى جدة وتم تعليق الرسائل القصيرة (SMS) فقط. بقي الاشتراك بالبريد الإلكتروني والواتساب كما هو.\n\nإذا كنت بحاجة إلى أي مساعدة أخرى، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات السعودية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01)."
+  },
+  {
+   "kind": "approval",
+   "text": "deliver_reply approved by the privacy officer",
+   "tool": "deliver_reply",
+   "approved": true
+  },
+  {
+   "kind": "delivery",
+   "text": "reply sent → faisal.anazi@mail.example",
+   "message_id": "OUT-0001",
+   "to": "faisal.anazi@mail.example",
+   "case_ids": [
+    "CASE-D3BFC820",
+    "CASE-987B5154"
+   ],
+   "status": "sent"
+  }
+ ],
+ "cases": [
+  "CASE-D3BFC820",
+  "CASE-987B5154"
+ ],
+ "changes": [
+  "correct_data",
+  "withdraw_consent"
+ ],
+ "redactions": [],
+ "delivery": {
+  "message_id": "OUT-0001",
+  "to": "faisal.anazi@mail.example",
+  "case_ids": [
+   "CASE-D3BFC820",
+   "CASE-987B5154"
+  ],
+  "status": "sent"
+ },
+ "steps": 3,
+ "requests": 3,
+ "served": {
+  "qwen2.5:14b": 3
+ },
+ "cached": 0,
+ "tokens": 8200,
+ "seconds": 37.7
+}

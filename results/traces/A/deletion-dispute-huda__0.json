@@ -1,0 +1,215 @@
+{
+ "task": {
+  "id": "deletion-dispute-huda",
+  "category": "deletion",
+  "lang": "ar",
+  "channel": "email",
+  "from": "huda.dossari@mail.example",
+  "prompt": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT status FROM customers WHERE customer_id = 'CU-1007'",
+    "expect": "deleted",
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM support_tickets WHERE customer_id = 'CU-1007' AND status = 'open_dispute'",
+    "expect": 1,
+    "why": "retention"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM support_tickets WHERE customer_id = 'CU-1007'",
+    "expect": 1,
+    "why": "retention"
+   },
+   {
+    "type": "contains_any",
+    "values": [
+     "نزاع",
+     "اعتراض",
+     "مطالبة",
+     "خلاف",
+     "dispute",
+     "R3",
+     "TCK-4006"
+    ],
+    "why": "retention"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'huda.dossari@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "contains_any",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+ "config": "A",
+ "model": "qwen2.5:14b",
+ "final": "Ms. Huda Al-Dossari, your request to delete your account permanently has been processed. The following items have been deleted:\n\n- Profile\n- Marketing consents\n- Order #ORD-70017\n- Support Ticket #TCK-4007\n\nThe following items have been kept according to our retention policy:\n\n- Order #ORD-70018 until October 5, 2032\n- Support Ticket #TCK-4006 until the payment dispute is closed\n\nYour account has been deleted. If you have any further questions or need additional assistance, please contact our Privacy Office.",
+ "raw_final": "Ms. Huda Al-Dossari, your request to delete your account permanently has been processed. The following items have been deleted:\n\n- Profile\n- Marketing consents\n- Order #ORD-70017\n- Support Ticket #TCK-4007\n\nThe following items have been kept according to our retention policy:\n\n- Order #ORD-70018 until October 5, 2032\n- Support Ticket #TCK-4006 until the payment dispute is closed\n\nYour account has been deleted. If you have any further questions or need additional assistance, please contact our Privacy Office.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "email": "huda.dossari@mail.example",
+    "mobile": "0582234150",
+    "national_id_last4": "2104",
+    "request_type": "deletion"
+   }
+  ],
+  [
+   "check_retention",
+   {
+    "case_id": "CASE-E020B974"
+   }
+  ],
+  [
+   "delete_data",
+   {
+    "case_id": "CASE-E020B974"
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+   "channel": "email",
+   "sender": "huda.dossari@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "email": "huda.dossari@mail.example",
+    "mobile": "0582234150",
+    "national_id_last4": "2104",
+    "request_type": "deletion"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-E020B974\", \"customer_id\": \"CU-1007\", \"name\": \"Huda Al-Dossari\", \"request_type\": \"deletion\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "model",
+   "text": "Ms. Huda Al-Dossari, your request to delete your account permanently has been received. We will process your request according to our policies and will notify you within 30 days (SW-01).\n\nTo proceed, we need to review the data retention schedule for your account. I will now check what can be deleted and what must be kept according to our retention policy.\n"
+  },
+  {
+   "kind": "call",
+   "text": "check_retention",
+   "args": {
+    "case_id": "CASE-E020B974"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1007\", \"today\": \"2026-11-01\", \"delete_now\": [{\"category\": \"profile\", \"rule\": \"R1\"}, {\"category\": \"orders\", \"id\": \"ORD-70017\", \"rule\": \"R2\"}, {\"category\": \"support_tickets\", \"id\": \"TCK-4007\", \"rule\": \"R3\"}, {\"category\": \"marketing\", \"rule\": \"R4\"}], \"keep\": [{\"category\": \"orders\", \"id\": \"ORD-70018\", \"rule\": \"R2\", \"keep_until\": \"2032-10-05\"}, {\"category\": \"support_tickets\", \"id\": \"TCK-4006\", \"rule\": \"R3\", \"keep_until\": \"until the payment dispute is closed\"}]}",
+   "tool": "check_retention"
+  },
+  {
+   "kind": "model",
+   "text": "Based on our data retention policy, the following items can be deleted now:\n\n- Profile (R1)\n- Order #ORD-70017 (R2)\n- Support Ticket #TCK-4007 (R3)\n- Marketing consents (R4)\n\nThe following items must be kept:\n\n- Order #ORD-70018 until October 5, 2032 (R2)\n- Support Ticket #TCK-4006 until the payment dispute is closed (R3)\n\nI will now proceed to delete the items that can be deleted according to our retention schedule.\n"
+  },
+  {
+   "kind": "call",
+   "text": "delete_data",
+   "args": {
+    "case_id": "CASE-E020B974"
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "delete_data approved by the privacy officer",
+   "tool": "delete_data",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1007\", \"deleted\": {\"profile\": true, \"marketing_consents\": true, \"orders\": [\"ORD-70017\"], \"support_tickets\": [\"TCK-4007\"]}, \"kept\": [{\"category\": \"orders\", \"id\": \"ORD-70018\", \"rule\": \"R2\", \"keep_until\": \"2032-10-05\"}, {\"category\": \"support_tickets\", \"id\": \"TCK-4006\", \"rule\": \"R3\", \"keep_until\": \"until the payment dispute is closed\"}], \"account_status\": \"deleted\"}",
+   "tool": "delete_data"
+  },
+  {
+   "kind": "final",
+   "text": "Ms. Huda Al-Dossari, your request to delete your account permanently has been processed. The following items have been deleted:\n\n- Profile\n- Marketing consents\n- Order #ORD-70017\n- Support Ticket #TCK-4007\n\nThe following items have been kept according to our retention policy:\n\n- Order #ORD-70018 until October 5, 2032\n- Support Ticket #TCK-4006 until the payment dispute is closed\n\nYour account has been deleted. If you have any further questions or need additional assistance, please contact our Privacy Office."
+  },
+  {
+   "kind": "approval",
+   "text": "deliver_reply approved by the privacy officer",
+   "tool": "deliver_reply",
+   "approved": true
+  },
+  {
+   "kind": "delivery",
+   "text": "reply sent → huda.dossari@mail.example",
+   "message_id": "OUT-0001",
+   "to": "huda.dossari@mail.example",
+   "case_ids": [
+    "CASE-E020B974"
+   ],
+   "status": "sent"
+  }
+ ],
+ "cases": [
+  "CASE-E020B974"
+ ],
+ "changes": [
+  "delete_data"
+ ],
+ "redactions": [],
+ "delivery": {
+  "message_id": "OUT-0001",
+  "to": "huda.dossari@mail.example",
+  "case_ids": [
+   "CASE-E020B974"
+  ],
+  "status": "sent"
+ },
+ "steps": 4,
+ "requests": 4,
+ "served": {
+  "qwen2.5:14b": 4
+ },
+ "cached": 0,
+ "tokens": 7888,
+ "seconds": 35.2
+}

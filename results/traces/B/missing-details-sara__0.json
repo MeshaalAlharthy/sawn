@@ -1,0 +1,122 @@
+{
+ "task": {
+  "id": "missing-details-sara",
+  "category": "verification",
+  "lang": "ar",
+  "channel": "web_form",
+  "prompt": "ابغى نسخة من بياناتي اللي عندكم. ايميلي sara.qahtani@mail.example",
+  "graders": [
+   {
+    "type": "tool_not_called",
+    "name": "export_data",
+    "why": "missing details"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM cases",
+    "expect": 0,
+    "why": "missing details"
+   },
+   {
+    "type": "contains_any",
+    "values": [
+     "الجوال",
+     "جوال",
+     "الهوية",
+     "آخر 4",
+     "آخر أربعة",
+     "mobile"
+    ],
+    "why": "missing details"
+   },
+   {
+    "type": "lang",
+    "value": "ar",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "tool_not_called",
+   "why": "missing details",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "missing details",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "contains_any",
+   "why": "missing details",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "ابغى نسخة من بياناتي اللي عندكم. ايميلي sara.qahtani@mail.example",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "الرجاء التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول الخاص بك، أو الاتصال بفريق الخصوصية على privacy@nakhla.example.",
+ "raw_final": "الرجاء التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول الخاص بك، أو الاتصال بفريق الخصوصية على privacy@nakhla.example.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "mobile": "",
+    "request_type": "access",
+    "email": "sara.qahtani@mail.example",
+    "national_id_last4": ""
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "ابغى نسخة من بياناتي اللي عندكم. ايميلي sara.qahtani@mail.example",
+   "channel": "web_form",
+   "sender": ""
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "mobile": "",
+    "request_type": "access",
+    "email": "sara.qahtani@mail.example",
+    "national_id_last4": ""
+   }
+  },
+  {
+   "kind": "error",
+   "text": "{\"error\": \"Verification failed (SW-02). Do not say whether an account exists. Ask the person to check their registered email, the last 4 digits of their national ID and their mobile, or to contact privacy@nakhla.example.\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "final",
+   "text": "الرجاء التحقق من البريد الإلكتروني المسجل، الأرقام الأربعة الأخيرة من بطاقة الهوية الوطنية، والهاتف المحمول الخاص بك، أو الاتصال بفريق الخصوصية على privacy@nakhla.example."
+  }
+ ],
+ "cases": [],
+ "changes": [],
+ "redactions": [],
+ "delivery": null,
+ "steps": 2,
+ "requests": 2,
+ "served": {
+  "qwen2.5:14b": 2
+ },
+ "cached": 0,
+ "tokens": 4876,
+ "seconds": 11.8
+}

@@ -1,0 +1,189 @@
+{
+ "task": {
+  "id": "deletion-dispute-huda",
+  "category": "deletion",
+  "lang": "ar",
+  "channel": "email",
+  "from": "huda.dossari@mail.example",
+  "prompt": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT status FROM customers WHERE customer_id = 'CU-1007'",
+    "expect": "deleted",
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM support_tickets WHERE customer_id = 'CU-1007' AND status = 'open_dispute'",
+    "expect": 1,
+    "why": "retention"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM support_tickets WHERE customer_id = 'CU-1007'",
+    "expect": 1,
+    "why": "retention"
+   },
+   {
+    "type": "contains_any",
+    "values": [
+     "نزاع",
+     "اعتراض",
+     "مطالبة",
+     "خلاف",
+     "dispute",
+     "R3",
+     "TCK-4006"
+    ],
+    "why": "retention"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'huda.dossari@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "contains_any",
+   "why": "retention",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "تم حذف حسابك نهائيًا وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (PDPL). تم حذف معلوماتك الشخصية والموافقتك على التسويق، بالإضافة إلى الطلبات القديمة والشكاوى المغلقة. تم الاحتفاظ بالطلب رقم ORD-70018 حتى 2032-10-05 وفقًا لقاعدة R2، والشكاوى المفتوحة حتى يتم حل النزاعات المالية وفقًا لقاعدة R3. يمكنك الاتصال بفريق حماية البيانات في نخلة ريتيل على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المساعدة.",
+ "raw_final": "تم حذف حسابك نهائيًا وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (PDPL). تم حذف معلوماتك الشخصية والموافقتك على التسويق، بالإضافة إلى الطلبات القديمة والشكاوى المغلقة. تم الاحتفاظ بالطلب رقم ORD-70018 حتى 2032-10-05 وفقًا لقاعدة R2، والشكاوى المفتوحة حتى يتم حل النزاعات المالية وفقًا لقاعدة R3. يمكنك الاتصال بفريق حماية البيانات في نخلة ريتيل على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المساعدة.",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "email": "huda.dossari@mail.example",
+    "national_id_last4": "2104",
+    "mobile": "0582234150",
+    "request_type": "deletion"
+   }
+  ],
+  [
+   "delete_data",
+   {
+    "case_id": "CASE-E020B974"
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "أبغى أحذف حسابي نهائيًا. إيميلي huda.dossari@mail.example، الهوية تنتهي بـ 2104 وجوالي 0582234150.",
+   "channel": "email",
+   "sender": "huda.dossari@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "email": "huda.dossari@mail.example",
+    "national_id_last4": "2104",
+    "mobile": "0582234150",
+    "request_type": "deletion"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-E020B974\", \"customer_id\": \"CU-1007\", \"name\": \"Huda Al-Dossari\", \"request_type\": \"deletion\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "call",
+   "text": "delete_data",
+   "args": {
+    "case_id": "CASE-E020B974"
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "delete_data approved by the privacy officer",
+   "tool": "delete_data",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1007\", \"deleted\": {\"profile\": true, \"marketing_consents\": true, \"orders\": [\"ORD-70017\"], \"support_tickets\": [\"TCK-4007\"]}, \"kept\": [{\"category\": \"orders\", \"id\": \"ORD-70018\", \"rule\": \"R2\", \"keep_until\": \"2032-10-05\"}, {\"category\": \"support_tickets\", \"id\": \"TCK-4006\", \"rule\": \"R3\", \"keep_until\": \"until the payment dispute is closed\"}], \"account_status\": \"deleted\"}",
+   "tool": "delete_data"
+  },
+  {
+   "kind": "final",
+   "text": "تم حذف حسابك نهائيًا وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (PDPL). تم حذف معلوماتك الشخصية والموافقتك على التسويق، بالإضافة إلى الطلبات القديمة والشكاوى المغلقة. تم الاحتفاظ بالطلب رقم ORD-70018 حتى 2032-10-05 وفقًا لقاعدة R2، والشكاوى المفتوحة حتى يتم حل النزاعات المالية وفقًا لقاعدة R3. يمكنك الاتصال بفريق حماية البيانات في نخلة ريتيل على privacy@nakhla.example أو تقديم شكوى إلى سدايا إذا كنت بحاجة إلى مزيد من المساعدة."
+  },
+  {
+   "kind": "approval",
+   "text": "deliver_reply approved by the privacy officer",
+   "tool": "deliver_reply",
+   "approved": true
+  },
+  {
+   "kind": "delivery",
+   "text": "reply sent → huda.dossari@mail.example",
+   "message_id": "OUT-0001",
+   "to": "huda.dossari@mail.example",
+   "case_ids": [
+    "CASE-E020B974"
+   ],
+   "status": "sent"
+  }
+ ],
+ "cases": [
+  "CASE-E020B974"
+ ],
+ "changes": [
+  "delete_data"
+ ],
+ "redactions": [],
+ "delivery": {
+  "message_id": "OUT-0001",
+  "to": "huda.dossari@mail.example",
+  "case_ids": [
+   "CASE-E020B974"
+  ],
+  "status": "sent"
+ },
+ "steps": 3,
+ "requests": 3,
+ "served": {
+  "qwen2.5:14b": 3
+ },
+ "cached": 0,
+ "tokens": 7824,
+ "seconds": 30.0
+}

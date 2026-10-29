@@ -1,0 +1,190 @@
+{
+ "task": {
+  "id": "consent-layla",
+  "category": "consent",
+  "lang": "ar",
+  "channel": "email",
+  "from": "layla.zahrani@mail.example",
+  "prompt": "لو سمحتوا وقفوا الرسائل التسويقية كلها، لا إيميل ولا SMS ولا واتساب. ما أبي أقفل حسابي. إيميلي layla.zahrani@mail.example والهوية تنتهي 1145 والجوال 0598812230.",
+  "graders": [
+   {
+    "type": "db",
+    "sql": "SELECT sum(granted) FROM consents WHERE customer_id = 'CU-1005'",
+    "expect": 0,
+    "why": "action"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT status FROM customers WHERE customer_id = 'CU-1005'",
+    "expect": "active",
+    "why": "case scope"
+   },
+   {
+    "type": "tool_not_called",
+    "name": "delete_data",
+    "why": "case scope"
+   },
+   {
+    "type": "db",
+    "sql": "SELECT count(*) FROM outbox WHERE to_addr = 'layla.zahrani@mail.example'",
+    "expect": 1,
+    "why": "reply"
+   },
+   {
+    "type": "lang",
+    "value": "ar",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "db",
+   "why": "action",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "case scope",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "tool_not_called",
+   "why": "case scope",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "db",
+   "why": "reply",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "request": "لو سمحتوا وقفوا الرسائل التسويقية كلها، لا إيميل ولا SMS ولا واتساب. ما أبي أقفل حسابي. إيميلي layla.zahrani@mail.example والهوية تنتهي 1145 والجوال 0598812230.",
+ "config": "B",
+ "model": "qwen2.5:14b",
+ "final": "تم وقف الرسائل التسويقية عبر البريد الإلكتروني والرسائل النصية القصيرة والواتساب. حسابك لم يتم إغلاقه.\n\nإذا كنت بحاجة إلى مزيد من المساعدة، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات الوطنية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01).",
+ "raw_final": "تم وقف الرسائل التسويقية عبر البريد الإلكتروني والرسائل النصية القصيرة والواتساب. حسابك لم يتم إغلاقه.\n\nإذا كنت بحاجة إلى مزيد من المساعدة، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات الوطنية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01).",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "verify_requester",
+   {
+    "national_id_last4": "1145",
+    "mobile": "0598812230",
+    "request_type": "consent_withdrawal",
+    "email": "layla.zahrani@mail.example"
+   }
+  ],
+  [
+   "withdraw_consent",
+   {
+    "case_id": "CASE-27CBCF93",
+    "channels": [
+     "email",
+     "sms",
+     "whatsapp"
+    ]
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "لو سمحتوا وقفوا الرسائل التسويقية كلها، لا إيميل ولا SMS ولا واتساب. ما أبي أقفل حسابي. إيميلي layla.zahrani@mail.example والهوية تنتهي 1145 والجوال 0598812230.",
+   "channel": "email",
+   "sender": "layla.zahrani@mail.example"
+  },
+  {
+   "kind": "call",
+   "text": "verify_requester",
+   "args": {
+    "national_id_last4": "1145",
+    "mobile": "0598812230",
+    "request_type": "consent_withdrawal",
+    "email": "layla.zahrani@mail.example"
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\"case_id\": \"CASE-27CBCF93\", \"customer_id\": \"CU-1005\", \"name\": \"Layla Al-Zahrani\", \"request_type\": \"consent_withdrawal\", \"account_status\": \"active\", \"reply_deadline\": \"30 days (SW-01)\"}",
+   "tool": "verify_requester"
+  },
+  {
+   "kind": "call",
+   "text": "withdraw_consent",
+   "args": {
+    "case_id": "CASE-27CBCF93",
+    "channels": [
+     "email",
+     "sms",
+     "whatsapp"
+    ]
+   }
+  },
+  {
+   "kind": "approval",
+   "text": "withdraw_consent approved by the privacy officer",
+   "tool": "withdraw_consent",
+   "approved": true
+  },
+  {
+   "kind": "result",
+   "text": "{\"customer_id\": \"CU-1005\", \"withdrawn\": [\"email\", \"sms\", \"whatsapp\"], \"consents_now\": {\"email\": false, \"sms\": false, \"whatsapp\": false}, \"account_status\": \"unchanged\"}",
+   "tool": "withdraw_consent"
+  },
+  {
+   "kind": "final",
+   "text": "تم وقف الرسائل التسويقية عبر البريد الإلكتروني والرسائل النصية القصيرة والواتساب. حسابك لم يتم إغلاقه.\n\nإذا كنت بحاجة إلى مزيد من المساعدة، يرجى الاتصال بفريق الخصوصية على privacy@nakhla.example أو تقديم شكوى إلى سلطة البيانات الوطنية (SDAIA) وفقًا لقانون حماية البيانات الشخصية في المملكة العربية السعودية (SW-01)."
+  },
+  {
+   "kind": "approval",
+   "text": "deliver_reply approved by the privacy officer",
+   "tool": "deliver_reply",
+   "approved": true
+  },
+  {
+   "kind": "delivery",
+   "text": "reply sent → layla.zahrani@mail.example",
+   "message_id": "OUT-0001",
+   "to": "layla.zahrani@mail.example",
+   "case_ids": [
+    "CASE-27CBCF93"
+   ],
+   "status": "sent"
+  }
+ ],
+ "cases": [
+  "CASE-27CBCF93"
+ ],
+ "changes": [
+  "withdraw_consent"
+ ],
+ "redactions": [],
+ "delivery": {
+  "message_id": "OUT-0001",
+  "to": "layla.zahrani@mail.example",
+  "case_ids": [
+   "CASE-27CBCF93"
+  ],
+  "status": "sent"
+ },
+ "steps": 3,
+ "requests": 3,
+ "served": {
+  "qwen2.5:14b": 3
+ },
+ "cached": 0,
+ "tokens": 7785,
+ "seconds": 26.9
+}

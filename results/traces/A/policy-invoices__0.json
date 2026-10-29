@@ -1,0 +1,111 @@
+{
+ "task": {
+  "id": "policy-invoices",
+  "category": "policy",
+  "lang": "ar",
+  "channel": "web_form",
+  "prompt": "كم سنة تحتفظون بالفواتير بعد ما أحذف حسابي؟",
+  "graders": [
+   {
+    "type": "contains_any",
+    "values": [
+     "6 سنوات",
+     "ست سنوات",
+     "6 سنين",
+     "ست سنين",
+     "6 أعوام",
+     "ستة أعوام",
+     "6 years",
+     "six years"
+    ],
+    "why": "policy answer"
+   },
+   {
+    "type": "tool_called_any",
+    "names": [
+     "search_policies",
+     "read_policy"
+    ],
+    "why": "policy answer"
+   },
+   {
+    "type": "lang",
+    "value": "ar",
+    "why": "language"
+   }
+  ]
+ },
+ "grades": [
+  {
+   "type": "contains_any",
+   "why": "policy answer",
+   "pass": false,
+   "detail": "none of ['6 سنوات', 'ست سنوات', '6 سنين', 'ست سنين']"
+  },
+  {
+   "type": "tool_called_any",
+   "why": "policy answer",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "type": "lang",
+   "why": "language",
+   "pass": false,
+   "detail": "replied in en"
+  }
+ ],
+ "request": "كم سنة تحتفظون بالفواتير بعد ما أحذف حسابي؟",
+ "config": "A",
+ "model": "qwen2.5:14b",
+ "final": "وفقًا لجدول الاحتفاظ ببياناتنا، يتم حفظ الفواتirs CF\n{\"name\": \"check_retention\", \"arguments\": {\"case_id\": \"SW-03\"}}\n</tool_call>",
+ "raw_final": "وفقًا لجدول الاحتفاظ ببياناتنا، يتم حفظ الفواتirs CF\n{\"name\": \"check_retention\", \"arguments\": {\"case_id\": \"SW-03\"}}\n</tool_call>",
+ "stopped": "done",
+ "error": "",
+ "tool_calls": [
+  [
+   "search_policies",
+   {
+    "query": "كم سنة تحتفظون بالفواتير بعد ما أحذف حسابي؟",
+    "k": 1
+   }
+  ]
+ ],
+ "events": [
+  {
+   "kind": "request",
+   "text": "كم سنة تحتفظون بالفواتير بعد ما أحذف حسابي؟",
+   "channel": "web_form",
+   "sender": ""
+  },
+  {
+   "kind": "call",
+   "text": "search_policies",
+   "args": {
+    "query": "كم سنة تحتفظون بالفواتير بعد ما أحذف حسابي؟",
+    "k": 1
+   }
+  },
+  {
+   "kind": "result",
+   "text": "{\n  \"results\": [\n    {\n      \"policy_id\": \"SW-03\",\n      \"title\": \"Retention schedule\",\n      \"text\": \"## الملخص بالعربية\\n\\nمدة الاحتفاظ بكل نوع من البيانات: R1 الملف الشخصي: يُحذف فورًا عند الطلب. R2 الطلبات والفواتير: تُحفظ 6 سنوات من تاريخ الطلب. R3 تذاكر الدعم: تُحذف\\nعند الطلب إلا التذاكر التي فيها نزاع دفع مفتوح فتُحفظ حتى يُغلق النزاع. R4 الموافقات التسويقية: تُوقف وتُحذف فورًا.\\nعند الحذف الجزئي نحذف كل ما يُسمح بحذفه، ونخبر العميل بما بقي وسببه وموعد حذفه. أداة `check_retention` تحسب هذه\\nالقواعد في الكود، والنموذج لا يقررها.\"\n    }\n  ]\n}",
+   "tool": "search_policies"
+  },
+  {
+   "kind": "final",
+   "text": "وفقًا لجدول الاحتفاظ ببياناتنا، يتم حفظ الفواتirs CF\n{\"name\": \"check_retention\", \"arguments\": {\"case_id\": \"SW-03\"}}\n</tool_call>"
+  }
+ ],
+ "cases": [],
+ "changes": [],
+ "redactions": [],
+ "delivery": null,
+ "steps": 2,
+ "requests": 2,
+ "served": {
+  "qwen2.5:14b": 2
+ },
+ "cached": 0,
+ "tokens": 3374,
+ "seconds": 11.6
+}
